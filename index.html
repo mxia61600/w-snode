@@ -1,141 +1,45 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>自然环境 - 静态展示页</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>自然环境展示</title>
+
 <style>
-  /* ---------- 基本重置 ---------- */
-  :root{
-    --day-sky:#9ad7ff;
-    --dusk-sky:#355070;
-    --night-sky:#071029;
-    --grass:#2aa876;
-    --mountain1:#2f4b3f;
-    --mountain2:#1f3932;
-    --sun:#ffd166;
-    --moon:#f5f7fa;
-    --cloud:#ffffff;
-    --water:#2b93d6;
-    --leaf:#3aa14a;
-  }
-  *{box-sizing:border-box;margin:0;padding:0}
-  html,body{height:100%}
-  body{
-    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans CJK SC", "Hiragino Sans GB", "Microsoft Yahei", sans-serif;
-    background: linear-gradient(var(--day-sky), #d3f0ff 60%);
-    color:#052026;
-    overflow:hidden;
-    -webkit-font-smoothing:antialiased;
-    -moz-osx-font-smoothing:grayscale;
-  }
+    body, html {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        font-family: Arial, sans-serif;
+        background: #000;
+    }
 
-  /* ---------- 布局 ---------- */
-  .scene{
-    position:relative;
-    width:100%;
-    height:100vh;
-    display:flex;
-    align-items:flex-end;
-    justify-content:center;
-  }
+    /* 整个页面为全屏照片 */
+    .background-photo {
+        width: 100%;
+        height: 100vh;
+        background-image: url("https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1600&q=80");
+        background-size: cover;        /* 自适应裁剪，不变形 */
+        background-position: center;   /* 居中显示 */
+        background-repeat: no-repeat;
+    }
 
-  /* ---------- 天空层（太阳 / 月亮 / 星星 / 云） ---------- */
-  .sky{
-    position:absolute;inset:0;pointer-events:none;
-    transition:background 1s ease;
-  }
+    /* 标题文字 */
+    .title {
+        position: absolute;
+        top: 5%;
+        left: 5%;
+        padding: 10px 20px;
+        background: rgba(0,0,0,0.4);
+        color: #fff;
+        font-size: 26px;
+        border-radius: 6px;
+    }
+</style>
+</head>
 
-  .sun, .moon{
-    position:absolute;
-    top:12vh;
-    left:10%;
-    width:120px;height:120px;
-    border-radius:50%;
-    box-shadow:0 12px 40px rgba(0,0,0,.12), 0 0 80px rgba(255,209,102,.15);
-    transform:translateY(0);
-    transition:all 1s ease;
-  }
-  .sun{background: radial-gradient(circle at 35% 30%, #fff3c2, var(--sun));}
-  .moon{
-    background: radial-gradient(circle at 35% 30%, #ffffff, #e7eef8 30%, #cfdcea 60%);
-    width:90px;height:90px;left:75%;
-    box-shadow:0 8px 30px rgba(0,0,0,.2), 0 0 40px rgba(255,255,255,.06) inset;
-  }
-
-  /* 星星 */
-  .stars{
-    position:absolute;inset:0;opacity:0;transition:opacity 1s;
-    background-image: radial-gradient(circle at 10% 20%, #ffffff 0px, transparent 2px),
-                      radial-gradient(circle at 30% 40%, #ffffff 0px, transparent 1.5px),
-                      radial-gradient(circle at 60% 10%, #ffffff 0px, transparent 1.8px),
-                      radial-gradient(circle at 80% 70%, #ffffff 0px, transparent 1px);
-    background-repeat:repeat;
-    background-size:200px 200px;
-    pointer-events:none;
-  }
-
-  /* 云 */
-  .cloud{
-    position:absolute;
-    top:8vh;
-    width:220px;height:70px;border-radius:50px;
-    background: linear-gradient(180deg,#fff,#f2f9ff);
-    box-shadow:0 12px 30px rgba(0,0,0,.06);
-    opacity:.95;
-    filter:blur(.2px);
-  }
-  .cloud:before,.cloud:after{
-    content:"";position:absolute;background:inherit;border-radius:50%;
-  }
-  .cloud:before{width:110px;height:110px;left:-50px;top:-30px}
-  .cloud:after{width:120px;height:120px;left:80px;top:-25px}
-  .cloud.group1{left:10%;animation:cloudmove 60s linear infinite}
-  .cloud.group2{left:50%;top:5vh;width:300px;height:90px;animation:cloudmove 100s linear infinite}
-  .cloud.group3{left:75%;top:4vh;width:180px;height:60px;animation:cloudmove 70s linear infinite}
-
-  @keyframes cloudmove{
-    0%{transform:translateX(-15vw)}
-    100%{transform:translateX(120vw)}
-  }
-
-  /* ---------- 地形（山、草地、树木） ---------- */
-  .ground{
-    position:relative;
-    width:100%;
-    height:45vh;
-    display:flex;
-    align-items:flex-end;
-    justify-content:center;
-    pointer-events:auto;
-  }
-  .mountains{
-    position:absolute;bottom:9vh;left:0;right:0;height:40%;
-  }
-  .mountain{
-    position:absolute;bottom:0;width:80%;height:120%;
-    left:10%;
-    background:
-      radial-gradient(circle at 20% 20%, rgba(255,255,255,.03), transparent 10%),
-      linear-gradient(180deg,var(--mountain1), #163a33);
-    clip-path:polygon(0 100%, 10% 35%, 22% 48%, 36% 30%, 50% 45%, 64% 22%, 78% 38%, 90% 20%, 100% 100%);
-    transform:scaleX(1);
-    filter:drop-shadow(0 12px 20px rgba(0,0,0,.18));
-  }
-  .mountain.second{
-    left:0;transform:scaleX(1);width:100%;height:80%;bottom:6vh;
-    background:linear-gradient(180deg,var(--mountain2), #0f2a24);
-    clip-path:polygon(0 100%, 8% 60%, 18% 45%, 32% 60%, 46% 38%, 58% 70%, 76% 50%, 86% 65%, 100% 100%);
-    opacity:.95;
-  }
-
-  .meadow{
-    position:absolute;bottom:0;left:0;right:0;height:22vh;
-    background:linear-gradient(180deg,var(--grass), #1f8b62);
-    clip-path:ellipse(50% 60% at 50% 40%);
-    box-shadow:0 -4px 50px rgba(0,0,0,.12) inset;
-  }
-
-  /* 树（SVG 容器） */
-  .trees{
-    position:absolute;bottom:6vh;
+<body>
+    <div class="background-photo"></div>
+    <div class="title">自然环境</div>
+</body>
+</html>
